@@ -1,0 +1,3 @@
+# Notes
+
+- Redis and MongoDB
