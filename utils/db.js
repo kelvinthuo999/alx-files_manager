@@ -1,38 +1,44 @@
-// utils/db.js
-
 import { MongoClient } from 'mongodb';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 class DBClient {
-  constructor() {
-    const host = process.env.DB_HOST || 'localhost';
-    const port = process.env.DB_PORT || 27017;
-    const database = process.env.DB_DATABASE || 'files_manager';
-    const url = `mongodb://${host}:${port}`;
+    constructor() {
+        const host = process.env.DB_HOST || 'localhost';
+        const port = process.env.DB_PORT || 27017;
+        const database = process.env.DB_DATABASE || 'files_manager';
 
-    this.client = new MongoClient(url, { useUnifiedTopology: true });
-    this.client.connect().then(() => {
-      this.db = this.client.db(database);
-    }).catch((err) => {
-      console.error('MongoDB connection error:', err);
-    });
-  }
+        const uri = `mongodb://${host}:${port}/${database}`;
 
-  isAlive() {
-    return this.client && this.client.topology && this.client.topology.isConnected();
-  }
+        this.client = new MongoClient(uri, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
 
-  async nbUsers() {
-    return this.db.collection('users').countDocuments();
-  }
+        this.client.connect((err) => {
+            if (err) {
+                console.error('Connection to MongoDB failed:', err);
+            } else {
+                console.log('Connection to MongoDB successful');
+            }
+        });
+    }
 
-  async nbFiles() {
-    return this.db.collection('files').countDocuments();
-  }
+    isAlive() {
+        return !!this.client && this.client.isConnected();
+    }
+
+    async nbUsers() {
+        const usersCollection = this.client.db().collection('users');
+        const count = await usersCollection.countDocuments();
+        return count;
+    }
+
+    async nbFiles() {
+        const filesCollection = this.client.db().collection('files');
+        const count = await filesCollection.countDocuments();
+        return count;
+    }
 }
 
-// Create and export an instance of DBClient
 const dbClient = new DBClient();
+
 export default dbClient;
