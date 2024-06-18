@@ -4,6 +4,7 @@ import express from 'express';
 import AppController from '../controllers/AppController';
 import UsersController from '../controllers/UsersController';
 import AuthController from '../controllers/AuthController';
+import FilesController from '../controllers/FilesController';
 
 const router = express.Router();
 
@@ -23,9 +24,10 @@ router.get('/stats', async (req, res) => {
 router.post('/users', async (req, res) => {
   const { email, password } = req.body;
   try {
-    // Implement postNew function as per previous instructions
+    const newUser = await UsersController.postNew(email, password);
+    res.status(201).json(newUser);
   } catch (error) {
-    // Handle errors
+    res.status(error.statusCode || 500).json({ error: error.message });
   }
 });
 
@@ -59,6 +61,11 @@ router.get('/users/me', async (req, res) => {
     console.error('Error in /users/me:', error);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
+});
+
+// POST /files
+router.post('/files', async (req, res) => {
+  await FilesController.postUpload(req, res);
 });
 
 export default router;
