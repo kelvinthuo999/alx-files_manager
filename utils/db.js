@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 
 class DBClient {
   constructor() {
@@ -36,6 +36,22 @@ class DBClient {
     const filesCollection = this.client.db().collection('files');
     const count = await filesCollection.countDocuments();
     return count;
+  }
+
+  async getFileById(id) {
+    const filesCollection = this.client.db().collection('files');
+    const file = await filesCollection.findOne({ _id: new ObjectId(id) });
+    return file;
+  }
+
+  async getFilesByParentId(parentId, page = 0) {
+    const filesCollection = this.client.db().collection('files');
+    const files = await filesCollection
+      .find({ parentId })
+      .skip(page * 20)
+      .limit(20)
+      .toArray();
+    return files;
   }
 }
 

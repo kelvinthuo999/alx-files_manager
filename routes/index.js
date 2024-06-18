@@ -68,4 +68,29 @@ router.post('/files', async (req, res) => {
   await FilesController.postUpload(req, res);
 });
 
+// GET /files/:id
+router.get('/files/:id', async (req, res) => {
+  await FilesController.getShow(req, res);
+});
+
+// GET /files
+router.get('/files', async (req, res) => {
+  await FilesController.getIndex(req, res);
+});
+
+// PUT /files/:id/publish
+router.put('/files/:id/publish', async (req, res) => {
+  await FilesController.putPublish(req, res);
+});
+
+// PUT /files/:id/unpublish
+router.put('/files/:id/unpublish', async (req, res) => {
+  await FilesController.putUnpublish(req, res);
+});
+
+// GET /files/:id/data
+router.get('/files/:id/data', async (req, res) => {
+  await FilesController.getFile(req, res);
+});
+
 export default router;
